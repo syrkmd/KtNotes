@@ -19,7 +19,10 @@ class MainActivity : ComponentActivity() {
                         Log.d("MainActivity", "onNoteClick $it")
                     },
                     onAddNoteClick = {
-                        Log.d("MainActivity", "onButtonClick")
+                        Log.d("MainActivity", "onAddNoteClick")
+                    },
+                    onLongClick = {
+                        Log.d("MainActivity", "onLongClick")
                     }
                 )
             }
