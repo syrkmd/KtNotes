@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.yvl.notes.presentation.screens.creation.CreateNoteScreen
+import com.yvl.notes.presentation.screens.editing.EditNoteScreen
 import com.yvl.notes.presentation.screens.notes.NotesScreen
 import com.yvl.notes.presentation.ui.theme.NotesTheme
 
@@ -26,7 +27,13 @@ class MainActivity : ComponentActivity() {
 //                        Log.d("MainActivity", "onLongClick")
 //                    }
 //                )
-                CreateNoteScreen(
+//                CreateNoteScreen(
+//                    onFinished = {
+//                        Log.d("MainActivity", "onFinished")
+//                    }
+//                )
+                EditNoteScreen(
+                    noteId = 5,
                     onFinished = {
                         Log.d("MainActivity", "onFinished")
                     }
