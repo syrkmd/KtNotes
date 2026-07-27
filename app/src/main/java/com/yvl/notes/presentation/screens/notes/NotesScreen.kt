@@ -52,7 +52,6 @@ fun NotesScreen(
     viewModel: NotesViewModel = viewModel(),
     onNoteClick: (Note) -> Unit,
     onAddNoteClick: () -> Unit,
-    onLongClick: (Note) -> Unit,
 ) {
 
     val state by viewModel.state.collectAsState()
@@ -135,7 +134,9 @@ fun NotesScreen(
                                     modifier = Modifier.widthIn(max = 160.dp),
                                     note = note,
                                     onNoteClick = onNoteClick,
-                                    onLongClick = onLongClick,
+                                    onLongClick = {
+                                        viewModel.processCommand(NotesCommand.SwitchPinnedStatus(note.id))
+                                    },
                                     backgroundColor = PinnedNotesColors[index % PinnedNotesColors.size]
                                 )
                             }
@@ -170,7 +171,9 @@ fun NotesScreen(
                                 .padding(horizontal = 24.dp),
                             note = note,
                             onNoteClick = onNoteClick,
-                            onLongClick = onLongClick,
+                            onLongClick = {
+                                viewModel.processCommand(NotesCommand.SwitchPinnedStatus(note.id))
+                            },
                             backgroundColor = OtherNotesColors[index % OtherNotesColors.size]
                         )
                         Spacer(
