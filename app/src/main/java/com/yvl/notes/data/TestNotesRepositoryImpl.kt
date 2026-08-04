@@ -2,7 +2,6 @@ package com.yvl.notes.data
 
 import com.yvl.notes.domain.Note
 import com.yvl.notes.domain.NotesRepository
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
