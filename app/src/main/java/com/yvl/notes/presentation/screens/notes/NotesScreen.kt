@@ -1,6 +1,5 @@
 package com.yvl.notes.presentation.screens.notes
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
@@ -35,15 +34,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.yvl.notes.R
+import com.yvl.notes.domain.ContentItem
 import com.yvl.notes.domain.Note
 import com.yvl.notes.presentation.ui.theme.OtherNotesColors
 import com.yvl.notes.presentation.ui.theme.PinnedNotesColors
@@ -138,7 +136,11 @@ fun NotesScreen(
                                     note = note,
                                     onNoteClick = onNoteClick,
                                     onLongClick = {
-                                        viewModel.processCommand(NotesCommand.SwitchPinnedStatus(note.id))
+                                        viewModel.processCommand(
+                                            NotesCommand.SwitchPinnedStatus(
+                                                note.id
+                                            )
+                                        )
                                     },
                                     backgroundColor = PinnedNotesColors[index % PinnedNotesColors.size]
                                 )
@@ -328,13 +330,18 @@ fun NoteCard(
         Spacer(
             modifier = Modifier.height(24.dp)
         )
-        Text(
-            text = note.content,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Medium,
-            maxLines = 3,
-            overflow = TextOverflow.Ellipsis,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
+        note.content
+            .filterIsInstance<ContentItem.Text>()
+            .joinToString("\n") { it.content }
+            .let {
+                Text(
+                    text = it,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            }
     }
 }
