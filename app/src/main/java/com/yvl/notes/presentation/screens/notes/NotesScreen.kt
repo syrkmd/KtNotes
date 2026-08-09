@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
@@ -34,12 +35,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import coil3.compose.AsyncImage
 import com.yvl.notes.R
 import com.yvl.notes.domain.ContentItem
 import com.yvl.notes.domain.Note
@@ -170,17 +174,37 @@ fun NotesScreen(
                         items = state.otherNotes,
                         key = { _, note -> note.id }
                     ) { index, note ->
-                        NoteCard(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 24.dp),
-                            note = note,
-                            onNoteClick = onNoteClick,
-                            onLongClick = {
-                                viewModel.processCommand(NotesCommand.SwitchPinnedStatus(note.id))
-                            },
-                            backgroundColor = OtherNotesColors[index % OtherNotesColors.size]
-                        )
+                        val imageUrl = note.content
+                            .filterIsInstance<ContentItem.Image>()
+                            .map { it.url }
+                            .firstOrNull()
+
+                        if (imageUrl == null) {
+                            NoteCard(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 24.dp),
+                                note = note,
+                                onNoteClick = onNoteClick,
+                                onLongClick = {
+                                    viewModel.processCommand(NotesCommand.SwitchPinnedStatus(note.id))
+                                },
+                                backgroundColor = OtherNotesColors[index % OtherNotesColors.size]
+                            )
+                        } else {
+                            NoteCardWithImage(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 24.dp),
+                                note = note,
+                                imageUrl = imageUrl,
+                                onNoteClick = onNoteClick,
+                                onLongClick = {
+                                    viewModel.processCommand(NotesCommand.SwitchPinnedStatus(note.id))
+                                },
+                                backgroundColor = OtherNotesColors[index % OtherNotesColors.size]
+                            )
+                        }
                         Spacer(
                             modifier = Modifier.height(8.dp)
                         )
@@ -327,14 +351,85 @@ fun NoteCard(
             fontSize = 12.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        Spacer(
-            modifier = Modifier.height(24.dp)
-        )
+
         note.content
             .filterIsInstance<ContentItem.Text>()
+            .filter { it.content.isNotBlank() }
             .joinToString("\n") { it.content }
-            .let {
+            .takeIf { it.isNotBlank() }
+            ?.let {
+                Spacer(modifier = Modifier.height(24.dp))
                 Text(
+                    text = it,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            }
+    }
+}
+
+@Composable
+fun NoteCardWithImage(
+    modifier: Modifier = Modifier,
+    note: Note,
+    imageUrl: String,
+    backgroundColor: Color,
+    onNoteClick: (Note) -> Unit,
+    onLongClick: (Note) -> Unit,
+) {
+    Column(
+        modifier = modifier
+            .clip(RoundedCornerShape(16.dp))
+            .background(backgroundColor)
+            .combinedClickable(
+                onClick = {
+                    onNoteClick(note)
+                },
+                onLongClick = {
+                    onLongClick(note)
+                },
+            )
+    ) {
+        Box{
+            AsyncImage(
+                modifier = Modifier.heightIn(max = 120.dp)
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(16.dp)),
+                model = imageUrl,
+                contentDescription = "First image from note",
+                contentScale = ContentScale.FillWidth
+            )
+            Column(
+                modifier = Modifier.fillMaxWidth()
+                    .padding(16.dp)
+                    .align(Alignment.BottomStart)
+            ) {
+                Text(
+                    text = note.title,
+                    fontSize = 14.sp,
+                    maxLines = 1,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = DateFormatter.formatDateToString(note.updatedAt),
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+        }
+
+        note.content
+            .filterIsInstance<ContentItem.Text>()
+            .filter { it.content.isNotBlank() }
+            .joinToString("\n") { it.content }
+            .takeIf { it.isNotBlank() }
+            ?.let {
+                Text(
+                    modifier = Modifier.padding(16.dp),
                     text = it,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
