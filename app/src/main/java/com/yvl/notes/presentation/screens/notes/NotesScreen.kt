@@ -34,13 +34,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import coil3.compose.AsyncImage
@@ -89,7 +90,7 @@ fun NotesScreen(
                 item {
                     Title(
                         modifier = Modifier.padding(horizontal = 24.dp),
-                        text = "All Notes"
+                        text = stringResource(R.string.all_notes)
                     )
                 }
                 item {
@@ -116,7 +117,7 @@ fun NotesScreen(
                     item {
                         SubTitle(
                             modifier = Modifier.padding(horizontal = 24.dp),
-                            text = "Pinned"
+                            text = stringResource(R.string.pinned)
                         )
                     }
                     item {
@@ -162,7 +163,7 @@ fun NotesScreen(
                     item {
                         SubTitle(
                             modifier = Modifier.padding(horizontal = 24.dp),
-                            text = "Others"
+                            text = stringResource(R.string.others)
                         )
                     }
                     item {
@@ -247,7 +248,7 @@ private fun SearchBar(
         onValueChange = onQueryChange,
         placeholder = {
             Text(
-                text = "Search...",
+                text = stringResource(R.string.search),
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -261,7 +262,7 @@ private fun SearchBar(
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Search,
-                contentDescription = "Search Notes",
+                contentDescription = stringResource(R.string.search_notes),
                 tint = MaterialTheme.colorScheme.onSurface
             )
         },
@@ -293,7 +294,7 @@ private fun EmptyState(
     ) {
         Title(
             modifier = Modifier.padding(horizontal = 24.dp),
-            text = "All Notes"
+            text = stringResource(R.string.all_notes)
         )
         Spacer(
             modifier = Modifier.height(16.dp)
@@ -305,7 +306,7 @@ private fun EmptyState(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "No notes yet",
+                text = stringResource(R.string.no_notes_yet),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground
@@ -395,7 +396,8 @@ fun NoteCardWithImage(
     ) {
         Box{
             AsyncImage(
-                modifier = Modifier.heightIn(max = 120.dp)
+                modifier = Modifier
+                    .heightIn(max = 120.dp)
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(16.dp)),
                 model = imageUrl,
@@ -403,7 +405,17 @@ fun NoteCardWithImage(
                 contentScale = ContentScale.FillWidth
             )
             Column(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(
+                        brush = Brush.verticalGradient(
+                            listOf(
+                                Color.Transparent,
+                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                            )
+                        )
+                    )
                     .padding(16.dp)
                     .align(Alignment.BottomStart)
             ) {
